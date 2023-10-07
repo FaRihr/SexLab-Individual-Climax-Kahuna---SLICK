@@ -13,10 +13,6 @@ EndFunction
 Float Property ModVersion = 0.10 AutoReadOnly Hidden
 String Property sModId = "IndependentClimaxKahuna" AutoReadOnly Hidden
 
-Int Property SatIdx = 0 AutoReadOnly Hidden
-Int Property ExhIdx = 1 AutoReadOnly Hidden
-
-
 ; relative to data/skse/plugins/StorageUtilData/
 String Property sConfigFile = "../../../MCM/Settings/SLICK" AutoReadOnly Hidden
 

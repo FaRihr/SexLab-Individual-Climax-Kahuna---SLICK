@@ -64,7 +64,7 @@ Function OnStageEnd(SexLabThread akThread)
         return
     Else
         ; check which actors had an orgasm and send event for each
-        ; TODO: get climaxing actors
+        ; Scrab stated, that GetPositions() and the climaxing array share the same order. Yay!
         int[] climaxing = SexLabRegistry.GetClimaxingActors(curScene, curStage)
         Actor[] positions = akThread.GetPositions()
 
@@ -75,6 +75,8 @@ Function OnStageEnd(SexLabThread akThread)
             If (handle)
                 ModEvent.PushForm(handle, akThread)
                 ModEvent.PushForm(handle, climax)
+                ModEvent.PushFloat(handle, StorageUtil.GetFloatValue(climax, Config.sModId+".satisfaction"))
+                ModEvent.PushFloat(handle, StorageUtil.GetFloatValue(climax, Config.sModId+".exhaustion"))
                 ModEvent.Send(handle)
             EndIf
             i += 1

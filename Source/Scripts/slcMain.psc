@@ -58,7 +58,7 @@ Event OnSexlabEnd(int aiThreadID, bool abHasPlayer)
     EndWhile
 EndEvent
 
-Event OnSlickClimax(Form akThread, Form akActor)
+Event OnSlickClimax(Form akThread, Form akActor, Float fSatisfaction, Float fExhaustion)
     SexLabThread Thread = akThread as SexLabThread
     Actor Climaxing = akActor as Actor
 
