@@ -1,0 +1,52 @@
+<?xml version='1.0'?><!-- Game is either sse, tesv, or fo4 -->
+<PapyrusProject xmlns="PapyrusProject.xsd"
+    Flags="TESV_Papyrus_Flags.flg"
+    Game="sse"
+    Output="Scripts"
+    Optimize="true"
+    Anonymize="true"
+    Package="false"
+    Zip="true">
+    <Variables>
+        <Variable Name="ModName" Value="SexLab Independent Climax Kahuna - SLICK"/>
+        <Variable Name="ThisProject" Value="."/>
+        <Variable Name="Rel" Value=".\release"/>
+        <Variable Name="MO2" Value=".."/>
+        <Variable Name="Ver" Value="0.1.0"/>
+    </Variables>
+    <Imports>
+        <Import>@ThisProject\Source\Scripts</Import>
+        <!-- <Import>@MO2\Devious Devices for SE-AE-VR\Source\Scripts</Import> -->
+        <Import>@MO2\SexLab Aroused Redux SE\Source\Scripts</Import>
+        <Import>@MO2\SexLab_Framework_PPLUS_\Source\Scripts</Import>
+        <Import>@MO2\SexLab Framework AE\Source\Scripts</Import>
+        <!-- <Import>@MO2\Acheron - Death Alternative\Source\Scripts</Import> -->
+        <Import>@MO2\XP32 Maximum Skeleton Special Extended\Source\Scripts</Import>
+        <Import>@MO2\RaceMenu\Source\Scripts</Import>
+        <Import>@MO2\SkyUI SDK\Source\Scripts</Import>
+        <Import>@MO2\Mfg Fix\Source\Scripts</Import>
+        <Import>@MO2\JContainers SE\Source\Scripts</Import>
+        <Import>@MO2\iWant Widgets\Source\Scripts</Import>
+        <Import>@MO2\ConsoleUtilSSE NG\Source\Scripts</Import>
+        <Import>@MO2\FNIS Sexy Move SDK\Source\Scripts</Import>
+        <Import>@MO2\Fores New Idles in Skyrim SE - FNIS SE\Source\Scripts</Import>
+        <Import>@MO2\Skyrim Script Extender (SKSE64)\Source\Scripts</Import>
+        <Import>@MO2\Creation Kit Scripts\Source\Scripts</Import>
+        <Import>D:\Games\Steam\steamapps\common\Skyrim Special Edition\Data\Source\Scripts</Import>
+    </Imports>
+    <Folders>
+        <Folder>.\Source\Scripts</Folder>
+    </Folders>
+    <ZipFiles Output="@Rel">
+        <ZipFile Name="@ModName-@Ver" RootDir="@ThisProject" Compression="deflate">
+        	<Include>SLICK.esp</Include>
+            <Include>docs</Include>
+            <Include>Interface</Include>
+            <Include>Scripts</Include>
+            <!-- <Include>SEQ</Include> -->
+            <Include>SKSE</Include>
+            <!-- <Include>Sound</Include> -->
+            <Include>Source</Include>
+        </ZipFile>
+    </ZipFiles>
+</PapyrusProject>
