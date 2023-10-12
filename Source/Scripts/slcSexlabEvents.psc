@@ -2,7 +2,7 @@ Scriptname slcSexlabEvents extends SexLabThreadHook
 {The blocking hook to track Sexlab thread events}
 
 slcMain Property Main Auto
-slcBaseConfig Property Config Auto
+slcConfig Property Config Auto
 SexLabFramework Property Sexlab Auto
 slaFrameworkScr Property Arousal Auto
 
