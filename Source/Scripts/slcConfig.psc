@@ -16,14 +16,28 @@ String Property sModId = "IndependentClimaxKahuna" AutoReadOnly Hidden
 ; relative to data/skse/plugins/StorageUtilData/
 String Property sConfigFile = "../../../MCM/Settings/SLICK" AutoReadOnly Hidden
 
+Bool _Debug
+Bool Property DoDebug Hidden
+    Bool Function Get()
+        return _Debug
+    EndFunction
+EndProperty
+
 ;/ //////////////////////////////////////////////////
  / MCM user settings
  ///////////////////////////////////////////////////;
 Bool Property bPlayerOnly = false Auto Hidden
+Float Property fUpdateInterval = 3.0 Auto Hidden
 
 ;/ //////////////////////////////////////////////////
  / Internal Functions related to settings
  ///////////////////////////////////////////////////;
+Event OnGameReload()
+	parent.OnGameReload() ; Don't forget to call the parent!
+	
+    _Debug = Utility.GetINIBool("bEnableLogging:Papyrus")
+EndEvent
+
 Bool Function SaveSettings()
     SetIntValue(sConfigFile, "iMCMVersion", GetVersion())
 
