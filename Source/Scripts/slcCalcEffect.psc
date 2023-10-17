@@ -9,7 +9,7 @@ SexLabThread Thread
 Event OnEffectStart(Actor akTarget, Actor akCaster)
     Thread = Sexlab.GetThreadByActor(akTarget)
     RegisterForSingleUpdate(0.1)
-    RegisterForModEvent("SLICKClimaxingActor", "OnSlickClimax")
+    RegisterForModEvent("HookOrgasmStart", "OnOrgasmStart")
 EndEvent
 
 ; TODO: recalculate stats periodically
@@ -24,17 +24,40 @@ Event OnEffectFinish(Actor akTarget, Actor akCaster)
     Thread = None
 EndEvent
 
-Event OnSlickClimax(Form akThread, Form akActor, Float fSatisfaction, Float fExhaustion)
-    If (akThread as SexLabThread != Thread)
+; TODO: apply proper orgasm event handling
+Event OnOrgasmStart(int aiThreadID, bool abHasPlayer)
+    If (Sexlab.GetThread(aiThreadID) != Thread)
         return
     EndIf
-    Actor Climaxing = akActor as Actor
 
-    ; TODO: adjust satisfaction and exhaustion in case of an orgasm
-    Int sex = Climaxing.GetActorBase().GetSex()
-    If (sex == 0) ; male
-        ; code
-    ElseIf (sex == 1) ; female
-        ; code
-    EndIf
+    String curScene = Thread.GetActiveScene()
+    String curStage = Thread.GetActiveStage()
+    String[] climaxStages = SexlabRegistry.GetClimaxStages(curScene)
+
+    ; check which actors had an orgasm
+    ; Scrab stated, that GetPositions() and the climaxing array share the same order. Yay!
+    int[] climaxing = SexLabRegistry.GetClimaxingActors(curScene, curStage)
+    Actor[] positions = Thread.GetPositions()
+
+    int i = 0
+    While (i < climaxing.Length)
+        Actor climax = positions[climaxing[i]]
+
+        ; partly SLSO backwards compatibility
+        Int handle = ModEvent.Create("SexlabOrgasmSeparate")
+        If (handle)
+            ModEvent.PushForm(handle, climax)
+            ModEvent.PushInt(handle, Thread.GetThreadID())
+        EndIf
+
+        ; TODO: adjust satisfaction and exhaustion in case of an orgasm
+        Int sex = climax.GetLeveledActorBase().GetSex()
+        If (sex == 0) ; male - penalty, harder to get consecutive orgasms
+            ; code
+        ElseIf (sex == 1) ; female - bonus, easier to chain orgasms
+            ; code
+        EndIf
+        
+        i += 1
+    EndWhile
 EndEvent

@@ -2,6 +2,7 @@ Scriptname slcSexlabEvents extends SexLabThreadHook
 {The blocking hook to track Sexlab thread events}
 
 slcMain Property Main Auto
+slcLibrary Property Lib Auto
 slcBaseConfig Property Config Auto
 SexLabFramework Property Sexlab Auto
 slaFrameworkScr Property Arousal Auto
@@ -56,11 +57,27 @@ Function OnStageStart(SexLabThread akThread)
     String curStage = akThread.GetActiveStage()
     String[] climaxStages = SexlabRegistry.GetClimaxStages(curScene)
 
-    If (climaxStages.Find(curStage) > -1)
-        return
+    If (climaxStages.Find(curStage) > -1); check which actors had an orgasm and send event for each - asynchronous calculations
+        ; Scrab stated, that GetPositions() and the climaxing array share the same order. Yay!
+        int[] climaxing = SexLabRegistry.GetClimaxingActors(curScene, curStage)
+        Actor[] positions = akThread.GetPositions()
+    
+        int i = 0
+        While (i < climaxing.Length)
+            Actor climax = positions[climaxing[i]]
+            Int handle = ModEvent.Create("SLICKClimaxingActor")
+            If (handle)
+                ModEvent.PushForm(handle, akThread)
+                ModEvent.PushForm(handle, climax)
+                ModEvent.Send(handle)
+            EndIf
+            i += 1
+        EndWhile
+    Else
+        ; code
     EndIf
 
-    ; TODO: check if we skip to climax based on exhaustion
+    ; TODO: check if we skip to climax based on data
 EndFunction
 
 ; Called whenever a stage ends, including the very last one
@@ -72,30 +89,38 @@ Function OnStageEnd(SexLabThread akThread)
 
     String curScene = akThread.GetActiveScene()
     String curStage = akThread.GetActiveStage()
+    Bool isCon = akThread.IsConsent()
     String[] climaxStages = SexlabRegistry.GetClimaxStages(curScene)
 
     If (climaxStages.Find(curStage) < 0)
         return
     EndIf
 
-    ; check which actors had an orgasm and send event for each - asynchronous calculations
+    ; check which actors had an orgasm
     ; Scrab stated, that GetPositions() and the climaxing array share the same order. Yay!
     int[] climaxing = SexLabRegistry.GetClimaxingActors(curScene, curStage)
     Actor[] positions = akThread.GetPositions()
 
+    Bool allHappy = true
     int i = 0
-    While (i < climaxing.Length)
+    ; TODO: check for scene types whether all are happy
+    While (i < climaxing.Length && allHappy)
         Actor climax = positions[climaxing[i]]
-        Int handle = ModEvent.Create("SLICKClimaxingActor")
-        If (handle)
-            ModEvent.PushForm(handle, akThread)
-            ModEvent.PushForm(handle, climax)
-            ModEvent.PushFloat(handle, StorageUtil.GetFloatValue(climax, Config.sModId+".satisfaction"))
-            ModEvent.PushFloat(handle, StorageUtil.GetFloatValue(climax, Config.sModId+".exhaustion"))
-            ModEvent.Send(handle)
+
+        ; TODO: check whether the scene may end or if someone wants more
+        If (!isCon && !akThread.GetSubmissive(climax))
+            ; TODO: is aggressor satisified after orgasm?
+            allHappy = false
+        ElseIf (isCon)
+            ; TODO: is conesual partner satisifed
         EndIf
+
         i += 1
     EndWhile
+
+    If (!allHappy)
+        ; TODO: find random scene to switch to
+    EndIf
 EndFunction
 
 ; Called once the animation has ended
