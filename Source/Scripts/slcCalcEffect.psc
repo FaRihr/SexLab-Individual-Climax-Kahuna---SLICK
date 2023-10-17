@@ -3,6 +3,7 @@ Scriptname slcCalcEffect extends ActiveMagicEffect
 Calculates all relevant data of satisfaction and exhaustion for that participant}
 
 SexLabFramework Property Sexlab Auto
+slcConfig Property Config Auto
 
 SexLabThread Thread
 
@@ -15,7 +16,7 @@ EndEvent
 ; TODO: recalculate stats periodically
 Event OnUpdate()
 
-    RegisterForSingleUpdate(1.0)
+    RegisterForSingleUpdate(Config.fUpdateInterval)
 EndEvent
 
 Event OnEffectFinish(Actor akTarget, Actor akCaster)

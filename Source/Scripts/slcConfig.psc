@@ -27,6 +27,7 @@ EndProperty
  / MCM user settings
  ///////////////////////////////////////////////////;
 Bool Property bPlayerOnly = false Auto Hidden
+Float Property fUpdateInterval = 3.0 Auto Hidden
 
 ;/ //////////////////////////////////////////////////
  / Internal Functions related to settings
