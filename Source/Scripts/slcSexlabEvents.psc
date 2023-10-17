@@ -3,7 +3,7 @@ Scriptname slcSexlabEvents extends SexLabThreadHook
 
 slcMain Property Main Auto
 slcLibrary Property Lib Auto
-slcBaseConfig Property Config Auto
+slcConfig Property Config Auto
 SexLabFramework Property Sexlab Auto
 slaFrameworkScr Property Arousal Auto
 

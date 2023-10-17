@@ -1,7 +1,7 @@
 Scriptname slcMain extends Quest
 {The main functionality to update values and widgets}
 
-slcBaseConfig Property Config Auto
+slcConfig Property Config Auto
 SexLabFramework Property Sexlab Auto
 slaFrameworkScr Property Arousal Auto
 

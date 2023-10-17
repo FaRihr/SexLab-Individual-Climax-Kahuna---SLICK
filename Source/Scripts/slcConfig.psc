@@ -1,4 +1,4 @@
-Scriptname slcBaseConfig extends SKI_ConfigBase
+Scriptname slcConfig extends SKI_ConfigBase
 {The main configuration for SLICK for both, mod and user end}
 
 import JSONUtil
