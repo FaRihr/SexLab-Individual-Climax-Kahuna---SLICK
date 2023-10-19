@@ -3,7 +3,17 @@ Scriptname slcLibrary extends Quest
 
 slcConfig Property Config Auto
 
+; Statics for Skyrim GetSex() function
+Int Property SEX_NONE = -1 AutoReadOnly
+Int Property SEX_MALE = 0 AutoReadOnly
+Int Property SEX_FEMALE = 1 AutoReadOnly
+; additions by Sexlab P+ GetSex()
+Int Property SEX_FUTA = 2 AutoReadOnly
+Int Property SEX_CRTMALE = 3 AutoReadOnly
+Int Property SEX_CRTFEMALE = 4 AutoReadOnly
+
 ; Breadth-first search for a stage in given scene that has the given tag
+; asStart defines stage to start search from, empty string or none for first scene stage
 String Function BFS(String asID, String asTag, String asStart="")
     If (!SexlabRegistry.SceneExists(asID) || !SexlabRegistry.IsSceneEnabled(asID))
         Debug.TraceStack("Given scene ID doesn't exist or is disabled!" + asID, 1)
@@ -48,6 +58,8 @@ String Function BFS(String asID, String asTag, String asStart="")
 EndFunction
 
 ; TODO: integrate functioning DFS algo for SL scenes
+; Depth-first search for a stage in given scene that has the given tag
+; asStart defines stage to start search from, empty string or none for first scene stage
 String Function DFS(String asID, String asTag, String asStart="")
     If (!SexlabRegistry.SceneExists(asID) || !SexlabRegistry.IsSceneEnabled(asID))
         Debug.TraceStack("Given scene ID doesn't exist or is disabled!" + asID, 1)

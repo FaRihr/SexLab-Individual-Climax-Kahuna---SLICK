@@ -100,12 +100,13 @@ Function OnStageEnd(SexLabThread akThread)
     ; Scrab stated, that GetPositions() and the climaxing array share the same order. Yay!
     int[] climaxing = SexLabRegistry.GetClimaxingActors(curScene, curStage)
     Actor[] positions = akThread.GetPositions()
+    Actor climax = none
 
     Bool allHappy = true
     int i = 0
     ; TODO: check for scene types whether all are happy
     While (i < climaxing.Length && allHappy)
-        Actor climax = positions[climaxing[i]]
+        climax = positions[climaxing[i]]
 
         ; TODO: check whether the scene may end or if someone wants more
         If (!isCon && !akThread.GetSubmissive(climax))
@@ -119,7 +120,17 @@ Function OnStageEnd(SexLabThread akThread)
     EndWhile
 
     If (!allHappy)
-        ; TODO: find random scene to switch to
+        String[] threadScenes = akThread.GetPlayingScenes()
+        String[] penetrationScenes = SexlabRegistry.LookupScenesA(akThread.GetPositions(), "Penetration", akThread.GetSubmissives(), 1, none)
+        String[] possibleScenes = PapyrusUtil.GetMatchingString(threadScenes, penetrationScenes)
+
+        If (possibleScenes.Length <= 0)
+            return
+        EndIf
+        Int num = Utility.RandomInt(0, possibleScenes.Length - 1)
+
+        String nextScene = possibleScenes[num]
+        akThread.SkipTo(Lib.BFS(nextScene, "Penetration"))
     EndIf
 EndFunction
 
@@ -129,4 +140,3 @@ Function OnAnimationEnd(SexLabThread akThread)
         return
     EndIf
 EndFunction
-

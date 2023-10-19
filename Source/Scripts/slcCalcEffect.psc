@@ -4,6 +4,7 @@ Calculates all relevant data of satisfaction and exhaustion for that participant
 
 SexLabFramework Property Sexlab Auto
 slcConfig Property Config Auto
+slcLibrary Property Lib Auto
 
 SexLabThread Thread
 
@@ -33,7 +34,7 @@ Event OnOrgasmStart(int aiThreadID, bool abHasPlayer)
 
     String curScene = Thread.GetActiveScene()
     String curStage = Thread.GetActiveStage()
-    String[] climaxStages = SexlabRegistry.GetClimaxStages(curScene)
+    ; String[] climaxStages = SexlabRegistry.GetClimaxStages(curScene)
 
     ; check which actors had an orgasm
     ; Scrab stated, that GetPositions() and the climaxing array share the same order. Yay!
@@ -53,9 +54,9 @@ Event OnOrgasmStart(int aiThreadID, bool abHasPlayer)
 
         ; TODO: adjust satisfaction and exhaustion in case of an orgasm
         Int sex = climax.GetLeveledActorBase().GetSex()
-        If (sex == 0) ; male - penalty, harder to get consecutive orgasms
+        If (sex == Lib.SEX_MALE) ; male - penalty, harder to get consecutive orgasms
             ; code
-        ElseIf (sex == 1) ; female - bonus, easier to chain orgasms
+        ElseIf (sex == Lib.SEX_FEMALE) ; female - bonus, easier to chain orgasms
             ; code
         EndIf
         
