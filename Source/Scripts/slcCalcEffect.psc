@@ -22,7 +22,6 @@ EndEvent
 
 Event OnEffectFinish(Actor akTarget, Actor akCaster)
     UnregisterForUpdate()
-    UnregisterForModEvent("SLICKClimaxingActor")
     Thread = None
 EndEvent
 

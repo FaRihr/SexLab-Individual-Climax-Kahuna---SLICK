@@ -57,7 +57,7 @@ Function OnStageStart(SexLabThread akThread)
     String curStage = akThread.GetActiveStage()
     String[] climaxStages = SexlabRegistry.GetClimaxStages(curScene)
 
-    If (climaxStages.Find(curStage) > -1); check which actors had an orgasm and send event for each - asynchronous calculations
+    If (climaxStages.Find(curStage) > -1); check which actors had an orgasm
         ; Scrab stated, that GetPositions() and the climaxing array share the same order. Yay!
         int[] climaxing = SexLabRegistry.GetClimaxingActors(curScene, curStage)
         Actor[] positions = akThread.GetPositions()
@@ -65,12 +65,9 @@ Function OnStageStart(SexLabThread akThread)
         int i = 0
         While (i < climaxing.Length)
             Actor climax = positions[climaxing[i]]
-            Int handle = ModEvent.Create("SLICKClimaxingActor")
-            If (handle)
-                ModEvent.PushForm(handle, akThread)
-                ModEvent.PushForm(handle, climax)
-                ModEvent.Send(handle)
-            EndIf
+            
+            ; code
+
             i += 1
         EndWhile
     Else
@@ -107,30 +104,24 @@ Function OnStageEnd(SexLabThread akThread)
     ; TODO: check for scene types whether all are happy
     While (i < climaxing.Length && allHappy)
         climax = positions[climaxing[i]]
+        Float sat = StorageUtil.GetFloatValue(climax, Config.sModId+".satisfaction", 0)
 
         ; TODO: check whether the scene may end or if someone wants more
         If (!isCon && !akThread.GetSubmissive(climax))
             ; TODO: is aggressor satisified after orgasm?
+            If (sat < Config.fMinSatisfaction)
+                allHappy = false
+            EndIf
+        ElseIf (isCon && sat < Config.fMinSatisfaction)
+            ; TODO: is consensual partner satisifed
             allHappy = false
-        ElseIf (isCon)
-            ; TODO: is conesual partner satisifed
         EndIf
 
         i += 1
     EndWhile
 
-    If (!allHappy)
-        String[] threadScenes = akThread.GetPlayingScenes()
-        String[] penetrationScenes = SexlabRegistry.LookupScenesA(akThread.GetPositions(), "Penetration", akThread.GetSubmissives(), 1, none)
-        String[] possibleScenes = PapyrusUtil.GetMatchingString(threadScenes, penetrationScenes)
-
-        If (possibleScenes.Length <= 0)
-            return
-        EndIf
-        Int num = Utility.RandomInt(0, possibleScenes.Length - 1)
-
-        String nextScene = possibleScenes[num]
-        akThread.SkipTo(Lib.BFS(nextScene, "Penetration"))
+    If (!allHappy && !akThread.HasContext("SLICKUnsatisfied"))
+        akThread.AddContext("SLICKUnsatisfied")
     EndIf
 EndFunction
 
@@ -138,5 +129,25 @@ EndFunction
 Function OnAnimationEnd(SexLabThread akThread)
     If (Config.bPlayerOnly && !akThread.HasActor(self.PlayerRef))
         return
+    EndIf
+
+    If (!Config.bSatisfactionNeeded || akThread.IsConsent())
+        return
+    EndIf
+
+    ; if one actor is unsatisified in the end, start another round
+    If (akThread.HasContext("SLICKUnsatisfied"))
+        String[] threadScenes = akThread.GetPlayingScenes()
+        String[] penetrationScenes = SexlabRegistry.LookupScenesA(akThread.GetPositions(), "Penetration", akThread.GetSubmissives(), 1, none)
+        String[] possibleScenes = PapyrusUtil.GetMatchingString(threadScenes, penetrationScenes)
+
+        If (possibleScenes.Length <= 0)
+            return
+        EndIf
+
+        Int num = Utility.RandomInt(0, possibleScenes.Length - 1)
+        String nextScene = possibleScenes[num]
+
+        akThread.SkipTo(Lib.BFS(nextScene, "Penetration"))
     EndIf
 EndFunction

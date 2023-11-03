@@ -28,6 +28,8 @@ EndProperty
  ///////////////////////////////////////////////////;
 Bool Property bPlayerOnly = false Auto Hidden
 Float Property fUpdateInterval = 3.0 Auto Hidden
+Bool Property bSatisfactionNeeded = false Auto Hidden
+Float Property fMinSatisfaction = 85.0 Auto Hidden
 
 ;/ //////////////////////////////////////////////////
  / Internal Functions related to settings
