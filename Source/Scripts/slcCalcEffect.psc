@@ -21,13 +21,14 @@ Event OnUpdate()
 EndEvent
 
 Event OnEffectFinish(Actor akTarget, Actor akCaster)
-    UnregisterForUpdate()
     Thread = None
+    UnregisterForUpdate()
+    UnRegisterForModEvent("HookOrgasmStart")
 EndEvent
 
 ; TODO: apply proper orgasm event handling
 Event OnOrgasmStart(int aiThreadID, bool abHasPlayer)
-    If (Sexlab.GetThread(aiThreadID) != Thread)
+    If (!Thread || Sexlab.GetThread(aiThreadID) != Thread)
         return
     EndIf
 
@@ -44,7 +45,7 @@ Event OnOrgasmStart(int aiThreadID, bool abHasPlayer)
     While (i < climaxing.Length)
         Actor climax = positions[climaxing[i]]
 
-        ; partly SLSO backwards compatibility
+        ; partial SLSO backwards compatibility
         Int handle = ModEvent.Create("SexlabOrgasmSeparate")
         If (handle)
             ModEvent.PushForm(handle, climax)
@@ -53,10 +54,11 @@ Event OnOrgasmStart(int aiThreadID, bool abHasPlayer)
 
         ; TODO: adjust satisfaction and exhaustion in case of an orgasm
         Int sex = climax.GetLeveledActorBase().GetSex()
-        If (sex == Lib.SEX_MALE) ; male - penalty, harder to get consecutive orgasms
-            ; code
-        ElseIf (sex == Lib.SEX_FEMALE) ; female - bonus, easier to chain orgasms
-            ; code
+        Float fCurExh = StorageUtil.GetFloatValue(climax, Config.sModId+".exhaustion")
+        If (sex == Lib.SEX_MALE || sex == Lib.SEX_FUTA) ; penis - penalty, harder to chain orgasms
+            StorageUtil.SetFloatValue(climax, Config.sModId+".exhaustion", fCurExh * 1.2)
+        ElseIf (sex == Lib.SEX_FEMALE) ; no penis - bonus, easier to chain orgasms
+            StorageUtil.SetFloatValue(climax, Config.sModId+".exhaustion", fCurExh / 1.2)
         EndIf
         
         i += 1

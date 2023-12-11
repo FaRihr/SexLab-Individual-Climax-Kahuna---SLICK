@@ -28,15 +28,15 @@ Function OnAnimationStarting(SexLabThread akThread)
         ; set initial satisfaction
         If (!akThread.IsConsent() && akThread.GetSubmissive(participants[i]) && !Sexlab.IsLewd(participants[i]))
             ; zero satisfaction if getting raped and not being lewd
-            StorageUtil.SetFloatValue(participants[i], Config.sModId+".satisfaction", 0)
+            StorageUtil.SetFloatValue(participants[i], Config.sModId+".satisfaction", 0.0)
         Else
             ; initial satisfaction as random fraction of current arousal
-            Float fFirstSat = Arousal.GetActorArousal(participants[i]) / Utility.RandomFloat(5.0, 10.0)
+            Float fFirstSat = Arousal.GetActorArousal(participants[i]) / Utility.RandomFloat(5.0, 15.0)
             StorageUtil.SetFloatValue(participants[i], Config.sModId+".satisfaction", fFirstSat)
         EndIf
 
         ; TODO: set initial exhaustion based on current stamina and time since last sex
-        StorageUtil.SetFloatValue(participants[i], Config.sModId+".exhaustion", 0)
+        StorageUtil.SetFloatValue(participants[i], Config.sModId+".exhaustion", 0.0)
 
         ; Add calculation spell to all participants
         If (participants[i].HasSpell(Main.Calculation))
@@ -148,6 +148,8 @@ Function OnAnimationEnd(SexLabThread akThread)
         Int num = Utility.RandomInt(0, possibleScenes.Length - 1)
         String nextScene = possibleScenes[num]
 
-        akThread.SkipTo(Lib.BFS(nextScene, "Penetration"))
+        String[] asTags = new String[1]
+        asTags[0] = "Penetration"
+        akThread.SkipTo(Lib.BFS(nextScene, asTags))
     EndIf
 EndFunction
