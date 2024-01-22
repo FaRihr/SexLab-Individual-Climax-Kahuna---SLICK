@@ -14,22 +14,22 @@ Event OnInit()
 EndEvent
 
 Function GameLoaded()
-    RegisterForModEvent("HookAnimationStart", "OnSexlabStart")
-    RegisterForModEvent("HookStageStart", "OnSLStageStart")
+    ; RegisterForModEvent("HookAnimationStart", "OnSexlabStart")
+    ; RegisterForModEvent("HookStageStart", "OnSLStageStart")
     RegisterForModEvent("HookAnimationEnd", "OnSexlabEnd")
 EndFunction
 
-Event OnSexlabStart(int aiThreadID, bool abHasPlayer)
-    If (Config.bPlayerOnly && !abHasPlayer)
-        return
-    EndIf
-EndEvent
+; Event OnSexlabStart(int aiThreadID, bool abHasPlayer)
+;     If (Config.bPlayerOnly && !abHasPlayer)
+;         return
+;     EndIf
+; EndEvent
 
-Event OnSLStageStart(int aiThreadID, bool abHasPlayer)
-    If (Config.bPlayerOnly && !abHasPlayer)
-        return
-    EndIf
-EndEvent
+; Event OnSLStageStart(int aiThreadID, bool abHasPlayer)
+;     If (Config.bPlayerOnly && !abHasPlayer)
+;         return
+;     EndIf
+; EndEvent
 
 Event OnSexlabEnd(int aiThreadID, bool abHasPlayer)
     ; remove control spells at end, no need to block thread for that
@@ -37,7 +37,7 @@ Event OnSexlabEnd(int aiThreadID, bool abHasPlayer)
 
     int i = 0
     While (i < participants.Length)
-        participants[i].RemoveSpell(self.VoiceControl)
+        ; participants[i].RemoveSpell(self.VoiceControl)
         participants[i].RemoveSpell(self.Calculation)
         i += 1
     EndWhile

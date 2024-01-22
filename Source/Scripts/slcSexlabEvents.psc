@@ -9,6 +9,8 @@ slaFrameworkScr Property Arousal Auto
 
 Actor Property PlayerRef Auto
 
+; TODO: DRY out orgasm stage and actor identification
+
 ; Called when all of the threads data is set, before the active animation is chosen
 Function OnAnimationStarting(SexLabThread akThread)
     If (Config.bPlayerOnly && !akThread.HasActor(self.PlayerRef))
@@ -18,36 +20,50 @@ Function OnAnimationStarting(SexLabThread akThread)
 
     int i = 0
     While (i < participants.Length)
-        ; add voice control at beginning
-        If (participants[i].HasSpell(Main.VoiceControl))
-            participants[i].RemoveSpell(Main.VoiceControl) ; safety for proper setup
-        EndIf
-        participants[i].AddSpell(Main.VoiceControl)
+        Actor participant = participants[i]
+        ; ; add voice control at beginning
+        ; If (participant.HasSpell(Main.VoiceControl))
+        ;     participant.RemoveSpell(Main.VoiceControl) ; safety for proper setup
+        ; EndIf
+        ; participant.AddSpell(Main.VoiceControl)
 
         ; set initial values for satisfaction and exhaustion based on external stats
         ; set initial satisfaction
-        If (!akThread.IsConsent() && akThread.GetSubmissive(participants[i]) && !Sexlab.IsLewd(participants[i]))
+        If (!akThread.IsConsent() && akThread.GetSubmissive(participant) && !Sexlab.IsLewd(participant))
             ; zero satisfaction if getting raped and not being lewd
-            StorageUtil.SetFloatValue(participants[i], Config.sModId+".satisfaction", 0.0)
+            StorageUtil.SetFloatValue(participant, Config.sModId+".satisfaction", 0.0)
         Else
             ; initial satisfaction as random fraction of current arousal
-            Float fFirstSat = Arousal.GetActorArousal(participants[i]) / Utility.RandomFloat(5.0, 15.0)
-            StorageUtil.SetFloatValue(participants[i], Config.sModId+".satisfaction", fFirstSat)
+            Float fFirstSat = Arousal.GetActorArousal(participant) / Utility.RandomFloat(3.0, 5.0)
+            StorageUtil.SetFloatValue(participant, Config.sModId+".satisfaction", fFirstSat)
         EndIf
 
+        ; TODO: get algorithm to calculate a fitting starting value based on the following two numbers
+        ; more time difference -> less starting exhaustion
+        Float fDifTimeSinceSex = Utility.GetCurrentGameTime() - Sexlab.LastSexGameTime(participant)
+        ; more current stamina -> less starting exhaustion
+        Float fCurStamina = participant.GetActorValuePercentage("Stamina")
+        If (fCurStamina == 0)
+            fCurStamina = 0.01
+        EndIf
+
+        ; TODO: change fDifTimeSinceSex with proper algo. Hyperbolic function? Have to play with numbers...
+        ; Float fFirstExh = fDifTimeSinceSex / fCurStamina
+        Float fFirstExh = 1 / (fDifTimeSinceSex / fCurStamina)
         ; TODO: set initial exhaustion based on current stamina and time since last sex
-        StorageUtil.SetFloatValue(participants[i], Config.sModId+".exhaustion", 0.0)
+        StorageUtil.SetFloatValue(participant, Config.sModId+".exhaustion", fFirstExh)
 
         ; Add calculation spell to all participants
-        If (participants[i].HasSpell(Main.Calculation))
-            participants[i].RemoveSpell(Main.Calculation) ; safety for proper setup
+        If (participant.HasSpell(Main.Calculation))
+            participant.RemoveSpell(Main.Calculation) ; safety for proper setup
         EndIf
-        participants[i].AddSpell(Main.Calculation)
+        participant.AddSpell(Main.Calculation)
 
         i += 1
     EndWhile
 EndFunction
 
+; TODO: find out if this blocks before or after sending OnOrgasm() event
 ; Called whenever a new stage is picked, including the very first one
 Function OnStageStart(SexLabThread akThread)
     If (Config.bPlayerOnly && !akThread.HasActor(self.PlayerRef))
@@ -57,24 +73,26 @@ Function OnStageStart(SexLabThread akThread)
     String curStage = akThread.GetActiveStage()
     String[] climaxStages = SexlabRegistry.GetClimaxStages(curScene)
 
-    If (climaxStages.Find(curStage) > -1); check which actors had an orgasm
-        ; Scrab stated, that GetPositions() and the climaxing array share the same order. Yay!
-        int[] climaxing = SexLabRegistry.GetClimaxingActors(curScene, curStage)
-        Actor[] positions = akThread.GetPositions()
-    
-        int i = 0
-        While (i < climaxing.Length)
-            Actor climax = positions[climaxing[i]]
-            
-            ; code
-
-            i += 1
-        EndWhile
-    Else
-        ; code
+    ; no need for any checks if no orgasm happens
+    If (climaxStages.Find(curStage) < 0)
+        return
     EndIf
 
-    ; TODO: check if we skip to climax based on data
+    ; check which actors would have an orgasm
+    ; Scrab stated, that GetPositions() and the climaxing array share the same order. Yay!
+    int[] climaxing = SexLabRegistry.GetClimaxingActors(curScene, curStage)
+    Actor[] positions = akThread.GetPositions()
+
+    int i = 0
+    While (i < climaxing.Length)
+        Actor climax = positions[climaxing[i]]
+        
+        ; code
+
+        i += 1
+    EndWhile
+
+    ; TODO: check if we skip orgasm based on data
 EndFunction
 
 ; Called whenever a stage ends, including the very last one
@@ -137,6 +155,7 @@ Function OnAnimationEnd(SexLabThread akThread)
 
     ; if one actor is unsatisified in the end, start another round
     If (akThread.HasContext("SLICKUnsatisfied"))
+        akThread.RemoveContext("SLICKUnsatisfied")
         String[] threadScenes = akThread.GetPlayingScenes()
         String[] penetrationScenes = SexlabRegistry.LookupScenesA(akThread.GetPositions(), "Penetration", akThread.GetSubmissives(), 1, none)
         String[] possibleScenes = PapyrusUtil.GetMatchingString(threadScenes, penetrationScenes)
@@ -150,6 +169,8 @@ Function OnAnimationEnd(SexLabThread akThread)
 
         String[] asTags = new String[1]
         asTags[0] = "Penetration"
-        akThread.SkipTo(Lib.BFS(nextScene, asTags))
+
+        String PenStage = Lib.BFS(nextScene, asTags)
+        akThread.SkipTo(PenStage)
     EndIf
 EndFunction
