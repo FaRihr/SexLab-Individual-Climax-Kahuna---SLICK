@@ -13,7 +13,9 @@ Actor Property PlayerRef Auto
 
 ; Called when all of the threads data is set, before the active animation is chosen
 Function OnAnimationStarting(SexLabThread akThread)
+    Lib.log("Hooking into animation start")
     If (Config.bPlayerOnly && !akThread.HasActor(self.PlayerRef))
+        Lib.log("Ignoring animation due to missing player setting")
         return
     EndIf
     Actor[] participants = akThread.GetPositions()
@@ -37,6 +39,7 @@ Function OnAnimationStarting(SexLabThread akThread)
             Float fFirstSat = Arousal.GetActorArousal(participant) / Utility.RandomFloat(3.0, 5.0)
             StorageUtil.SetFloatValue(participant, Config.sModId+".satisfaction", fFirstSat)
         EndIf
+        Lib.log("Initial satisfaction of " + participant + " = " + StorageUtil.GetFloatValue(participant, Config.sModId+".satisfaction"))
 
         ; TODO: get algorithm to calculate a fitting starting value based on the following two numbers
         ; more time difference -> less starting exhaustion
@@ -53,8 +56,11 @@ Function OnAnimationStarting(SexLabThread akThread)
         ; TODO: set initial exhaustion based on current stamina and time since last sex
         StorageUtil.SetFloatValue(participant, Config.sModId+".exhaustion", fFirstExh)
 
+        Lib.log("Initial exhaustion of " + participant + " = " + StorageUtil.GetFloatValue(participant, Config.sModId+".exhaustion"))
+
         ; Add calculation spell to all participants
         If (participant.HasSpell(Main.Calculation))
+            Lib.log(participant + " still had calc spell for some reason!", 1)
             participant.RemoveSpell(Main.Calculation) ; safety for proper setup
         EndIf
         participant.AddSpell(Main.Calculation)
@@ -67,6 +73,7 @@ EndFunction
 ; Called whenever a new stage is picked, including the very first one
 Function OnStageStart(SexLabThread akThread)
     If (Config.bPlayerOnly && !akThread.HasActor(self.PlayerRef))
+        Lib.log("Ignoring animation due to missing player setting")
         return
     EndIf
     String curScene = akThread.GetActiveScene()
@@ -77,6 +84,7 @@ Function OnStageStart(SexLabThread akThread)
     If (climaxStages.Find(curStage) < 0)
         return
     EndIf
+    Lib.log("Stage" + curStage + " in scene " + curScene + " identified as orgasm stage on stage start")
 
     ; check which actors would have an orgasm
     ; Scrab stated, that GetPositions() and the climaxing array share the same order. Yay!
@@ -86,18 +94,18 @@ Function OnStageStart(SexLabThread akThread)
     int i = 0
     While (i < climaxing.Length)
         Actor climax = positions[climaxing[i]]
-        
-        ; code
+        Lib.log("Climaxing actor " + climax + " - checking if orgasm is realistic")
+
+        ; TODO: check if we skip orgasm based on data
 
         i += 1
     EndWhile
-
-    ; TODO: check if we skip orgasm based on data
 EndFunction
 
 ; Called whenever a stage ends, including the very last one
 Function OnStageEnd(SexLabThread akThread)
     If (Config.bPlayerOnly && !akThread.HasActor(self.PlayerRef))
+        Lib.log("Ignoring animation due to missing player setting")
         return
     EndIf
     ; manipulate scene based on calculated satisfaction and exhaustion
@@ -110,6 +118,7 @@ Function OnStageEnd(SexLabThread akThread)
     If (climaxStages.Find(curStage) < 0)
         return
     EndIf
+    Lib.log("Stage" + curStage + " in scene " + curScene + " identified as orgasm stage on stage end")
 
     ; check which actors had an orgasm
     ; Scrab stated, that GetPositions() and the climaxing array share the same order. Yay!
@@ -139,23 +148,29 @@ Function OnStageEnd(SexLabThread akThread)
     EndWhile
 
     If (!allHappy && !akThread.HasContext("SLICKUnsatisfied"))
+        Lib.log("Added unsatisfied context to scene" + curScene + " to search for next anim on scene end")
         akThread.AddContext("SLICKUnsatisfied")
     EndIf
 EndFunction
 
 ; Called once the animation has ended
 Function OnAnimationEnd(SexLabThread akThread)
+    Lib.log("Hooking into animation end")
     If (Config.bPlayerOnly && !akThread.HasActor(self.PlayerRef))
+        Lib.log("Ignoring animation due to missing player setting")
         return
     EndIf
 
     If (!Config.bSatisfactionNeeded || akThread.IsConsent())
+        Lib.log("Ignoring animation due to satisfaction settings or consent")
         return
     EndIf
 
-    ; if one actor is unsatisified in the end, start another round
+    ; if an aggressive actor is unsatisified in the end, start another round
     If (akThread.HasContext("SLICKUnsatisfied"))
+        Lib.log("Aggressor was unsatisfied, searching for new anim as the show must go on!")
         akThread.RemoveContext("SLICKUnsatisfied")
+        ; TODO: refine tags to search for based on unsatisfied aggressor
         String[] threadScenes = akThread.GetPlayingScenes()
         String[] penetrationScenes = SexlabRegistry.LookupScenesA(akThread.GetPositions(), "Penetration", akThread.GetSubmissives(), 1, none)
         String[] possibleScenes = PapyrusUtil.GetMatchingString(threadScenes, penetrationScenes)
@@ -171,6 +186,7 @@ Function OnAnimationEnd(SexLabThread akThread)
         asTags[0] = "Penetration"
 
         String PenStage = Lib.BFS(nextScene, asTags)
+        Lib.log("Found new scene " + nextScene + ", starting at penetration stage " + PenStage)
         akThread.SkipTo(PenStage)
     EndIf
 EndFunction

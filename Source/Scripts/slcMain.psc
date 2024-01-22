@@ -2,6 +2,7 @@ Scriptname slcMain extends Quest
 {The main functionality to update values and widgets}
 
 slcConfig Property Config Auto
+slcLibrary Property Lib Auto
 SexLabFramework Property Sexlab Auto
 slaFrameworkScr Property Arousal Auto
 
@@ -37,6 +38,7 @@ Event OnSexlabEnd(int aiThreadID, bool abHasPlayer)
 
     int i = 0
     While (i < participants.Length)
+        Lib.log("Removing calc spell from actor " + participants[i])
         ; participants[i].RemoveSpell(self.VoiceControl)
         participants[i].RemoveSpell(self.Calculation)
         i += 1
