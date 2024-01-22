@@ -12,7 +12,7 @@
         <Variable Name="ThisProject" Value="."/>
         <Variable Name="Rel" Value=".\release"/>
         <Variable Name="MO2" Value=".."/>
-        <Variable Name="Ver" Value="0.1.0"/>
+        <Variable Name="Ver" Value="0.1.0-alpha.2"/>
     </Variables>
     <Imports>
         <Import>@ThisProject\Source\Scripts</Import>
@@ -27,12 +27,12 @@
         <Import>@MO2\Mfg Fix\Source\Scripts</Import>
         <Import>@MO2\JContainers SE\Source\Scripts</Import>
         <Import>@MO2\iWant Widgets\Source\Scripts</Import>
-        <Import>@MO2\ConsoleUtilSSE NG\Source\Scripts</Import>
+        <!-- <Import>@MO2\ConsoleUtilSSE NG\Source\Scripts</Import> -->
         <Import>@MO2\FNIS Sexy Move SDK\Source\Scripts</Import>
         <Import>@MO2\Fores New Idles in Skyrim SE - FNIS SE\Source\Scripts</Import>
         <Import>@MO2\Skyrim Script Extender (SKSE64)\Source\Scripts</Import>
         <Import>@MO2\Creation Kit Scripts\Source\Scripts</Import>
-        <Import>D:\Games\Steam\steamapps\common\Skyrim Special Edition\Data\Source\Scripts</Import>
+        <!-- <Import>D:\Games\Steam\steamapps\common\Skyrim Special Edition\Data\Source\Scripts</Import> -->
     </Imports>
     <Folders>
         <Folder>.\Source\Scripts</Folder>
