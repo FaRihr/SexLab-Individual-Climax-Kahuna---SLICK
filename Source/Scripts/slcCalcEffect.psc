@@ -17,7 +17,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
     Thread = Sexlab.GetThreadByActor(akTarget)
 
     Lib.log("Calc effect on actor " + akTarget + " started")
-    
+
     ; set initial values for satisfaction and exhaustion based on external stats
     ; set initial satisfaction
     If (!Thread.IsConsent() && Thread.GetSubmissive(theTarget) && !Sexlab.IsLewd(theTarget))
@@ -64,7 +64,7 @@ Event OnEffectFinish(Actor akTarget, Actor akCaster)
 EndEvent
 
 ; TODO: apply proper orgasm event handling
-Event OnOrgasmStart(int aiThreadID, bool abHasPlayer)    
+Event OnOrgasmStart(int aiThreadID, bool abHasPlayer)
     Lib.log("Calc effect received SL orgasm event")
     If (!Thread || Sexlab.GetThread(aiThreadID) != Thread)
         return
@@ -101,7 +101,7 @@ Event OnOrgasmStart(int aiThreadID, bool abHasPlayer)
                 StorageUtil.SetFloatValue(theTarget, Config.sModId+".exhaustion", fCurExh / 1.2)
             EndIf
         EndIf
-        
+
         i += 1
     EndWhile
 EndEvent

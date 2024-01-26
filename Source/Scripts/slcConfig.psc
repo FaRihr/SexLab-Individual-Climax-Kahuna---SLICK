@@ -38,7 +38,7 @@ Float Property fChangeToNoncon = 5.0 Auto Hidden
  ///////////////////////////////////////////////////;
 Event OnGameReload()
 	parent.OnGameReload() ; Don't forget to call the parent!
-	
+
     _Debug = Utility.GetINIBool("bEnableLogging:Papyrus")
 EndEvent
 
