@@ -1,6 +1,6 @@
 import re
 
-MCMscript = "source/scripts/slcConfigMenu.psc"
+MCMscript = "source/scripts/slcConfig.psc"
 TransBaseName = "Interface/Translations/SLICK_"
 
 # All languages supported by SkyUI MCM
@@ -38,7 +38,7 @@ for language in languages:
     if len(uniques) > 0:
         with open(TransBaseName + language + ".txt", "a+", encoding="utf_16_le") as f:
             f.write("\n")
-            f.write("\n".join(sorted(uniques)))
+            f.write("\n\t".join(sorted(uniques)))
 
         print(language + ", ", end="")
 
