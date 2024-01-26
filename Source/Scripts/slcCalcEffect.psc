@@ -5,16 +5,49 @@ Calculates all relevant data of satisfaction and exhaustion for that participant
 SexLabFramework Property Sexlab Auto
 slcConfig Property Config Auto
 slcLibrary Property Lib Auto
+slaFrameworkScr Property Arousal Auto
 
 SexLabThread Thread
 Actor theTarget
 
 Event OnEffectStart(Actor akTarget, Actor akCaster)
-    Lib.log("Calc effect on actor " + akTarget + " started")
+    RegisterForModEvent("HookOrgasmStart", "OnOrgasmStart")
+
     theTarget = akTarget
     Thread = Sexlab.GetThreadByActor(akTarget)
-    RegisterForSingleUpdate(0.1)
-    RegisterForModEvent("HookOrgasmStart", "OnOrgasmStart")
+
+    Lib.log("Calc effect on actor " + akTarget + " started")
+    
+    ; set initial values for satisfaction and exhaustion based on external stats
+    ; set initial satisfaction
+    If (!Thread.IsConsent() && Thread.GetSubmissive(theTarget) && !Sexlab.IsLewd(theTarget))
+        ; zero satisfaction if getting raped and not being lewd
+        StorageUtil.SetFloatValue(theTarget, Config.sModId+".satisfaction", 0.0)
+    Else
+        ; initial satisfaction as random fraction of arousal -> 20 to 33%
+        Float fFirstSat = theTarget.GetFactionRank(Arousal.slaArousal) / Utility.RandomFloat(3.0, 5.0)
+        StorageUtil.SetFloatValue(theTarget, Config.sModId+".satisfaction", fFirstSat)
+    EndIf
+    Lib.log("Initial satisfaction of " + theTarget + " = " + StorageUtil.GetFloatValue(theTarget, Config.sModId+".satisfaction"))
+
+    ; TODO: get algorithm to calculate a fitting starting value based on the following two numbers
+    ; more time difference -> less starting exhaustion
+    Float fDifTimeSinceSex = Utility.GetCurrentGameTime() - Sexlab.LastSexGameTime(theTarget)
+    ; more current stamina -> less starting exhaustion
+    Float fCurStamina = theTarget.GetActorValuePercentage("Stamina")
+    If (fCurStamina == 0)
+        fCurStamina = 0.01
+    EndIf
+
+    ; TODO: change fDifTimeSinceSex with proper algo. Hyperbolic function? Have to play with numbers...
+    ; Float fFirstExh = fDifTimeSinceSex / fCurStamina
+    Float fFirstExh = 1 / (fDifTimeSinceSex / fCurStamina)
+    ; set initial exhaustion based on current stamina and time since last sex
+    StorageUtil.SetFloatValue(theTarget, Config.sModId+".exhaustion", fFirstExh)
+
+    Lib.log("Initial exhaustion of " + theTarget + " = " + StorageUtil.GetFloatValue(theTarget, Config.sModId+".exhaustion"))
+
+    RegisterForSingleUpdate(1.0)
 EndEvent
 
 ; TODO: recalculate stats periodically
@@ -27,7 +60,7 @@ Event OnEffectFinish(Actor akTarget, Actor akCaster)
     Lib.log("Calc effect on actor " + akTarget + " finished")
     Thread = None
     UnregisterForUpdate()
-    UnRegisterForModEvent("HookOrgasmStart")
+    UnregisterForModEvent("HookOrgasmStart")
 EndEvent
 
 ; TODO: apply proper orgasm event handling

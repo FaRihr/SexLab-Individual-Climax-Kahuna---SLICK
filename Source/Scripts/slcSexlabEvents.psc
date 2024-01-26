@@ -29,35 +29,6 @@ Function OnAnimationStarting(SexLabThread akThread)
         ; EndIf
         ; participant.AddSpell(Main.VoiceControl)
 
-        ; set initial values for satisfaction and exhaustion based on external stats
-        ; set initial satisfaction
-        If (!akThread.IsConsent() && akThread.GetSubmissive(participant) && !Sexlab.IsLewd(participant))
-            ; zero satisfaction if getting raped and not being lewd
-            StorageUtil.SetFloatValue(participant, Config.sModId+".satisfaction", 0.0)
-        Else
-            ; initial satisfaction as random fraction of current arousal
-            Float fFirstSat = Arousal.GetActorArousal(participant) / Utility.RandomFloat(3.0, 5.0)
-            StorageUtil.SetFloatValue(participant, Config.sModId+".satisfaction", fFirstSat)
-        EndIf
-        Lib.log("Initial satisfaction of " + participant + " = " + StorageUtil.GetFloatValue(participant, Config.sModId+".satisfaction"))
-
-        ; TODO: get algorithm to calculate a fitting starting value based on the following two numbers
-        ; more time difference -> less starting exhaustion
-        Float fDifTimeSinceSex = Utility.GetCurrentGameTime() - Sexlab.LastSexGameTime(participant)
-        ; more current stamina -> less starting exhaustion
-        Float fCurStamina = participant.GetActorValuePercentage("Stamina")
-        If (fCurStamina == 0)
-            fCurStamina = 0.01
-        EndIf
-
-        ; TODO: change fDifTimeSinceSex with proper algo. Hyperbolic function? Have to play with numbers...
-        ; Float fFirstExh = fDifTimeSinceSex / fCurStamina
-        Float fFirstExh = 1 / (fDifTimeSinceSex / fCurStamina)
-        ; TODO: set initial exhaustion based on current stamina and time since last sex
-        StorageUtil.SetFloatValue(participant, Config.sModId+".exhaustion", fFirstExh)
-
-        Lib.log("Initial exhaustion of " + participant + " = " + StorageUtil.GetFloatValue(participant, Config.sModId+".exhaustion"))
-
         ; Add calculation spell to all participants
         If (participant.HasSpell(Main.Calculation))
             Lib.log(participant + " still had calc spell for some reason!", 1)
@@ -139,7 +110,7 @@ Function OnStageEnd(SexLabThread akThread)
             If (sat < Config.fMinSatisfaction)
                 allHappy = false
             EndIf
-        ElseIf (isCon && sat < Config.fMinSatisfaction)
+        ElseIf (isCon && sat < Config.fMinSatisfaction && Utility.RandomFloat(0.0, 99.999) < Config.fChangeToNoncon)
             ; TODO: is consensual partner satisifed
             allHappy = false
         EndIf
@@ -150,6 +121,7 @@ Function OnStageEnd(SexLabThread akThread)
     If (!allHappy && !akThread.HasContext("SLICKUnsatisfied"))
         Lib.log("Added unsatisfied context to scene" + curScene + " to search for next anim on scene end")
         akThread.AddContext("SLICKUnsatisfied")
+        akThread.SetConsent(false) ; change to rape
     EndIf
 EndFunction
 
@@ -170,9 +142,9 @@ Function OnAnimationEnd(SexLabThread akThread)
     If (akThread.HasContext("SLICKUnsatisfied"))
         Lib.log("Aggressor was unsatisfied, searching for new anim as the show must go on!")
         akThread.RemoveContext("SLICKUnsatisfied")
-        ; TODO: refine tags to search for based on unsatisfied aggressor
+        ; TODO: refine tags to search for, based on unsatisfied aggressor
         String[] threadScenes = akThread.GetPlayingScenes()
-        String[] penetrationScenes = SexlabRegistry.LookupScenesA(akThread.GetPositions(), "Penetration", akThread.GetSubmissives(), 1, none)
+        String[] penetrationScenes = SexlabRegistry.LookupScenesA(akThread.GetPositions(), "!Aggressive", akThread.GetSubmissives(), 1, none)
         String[] possibleScenes = PapyrusUtil.GetMatchingString(threadScenes, penetrationScenes)
 
         If (possibleScenes.Length <= 0)
@@ -183,7 +155,8 @@ Function OnAnimationEnd(SexLabThread akThread)
         String nextScene = possibleScenes[num]
 
         String[] asTags = new String[1]
-        asTags[0] = "Penetration"
+        asTags[0] = "!Aggressive"
+        ; asTags[1] = ""
 
         String PenStage = Lib.BFS(nextScene, asTags)
         Lib.log("Found new scene " + nextScene + ", starting at penetration stage " + PenStage)

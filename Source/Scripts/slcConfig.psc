@@ -31,6 +31,8 @@ Float Property fUpdateInterval = 3.0 Auto Hidden
 Bool Property bSatisfactionNeeded = false Auto Hidden
 Float Property fMinSatisfaction = 85.0 Auto Hidden
 
+Float Property fChangeToNoncon = 5.0 Auto Hidden
+
 ;/ //////////////////////////////////////////////////
  / Internal Functions related to settings
  ///////////////////////////////////////////////////;
@@ -47,7 +49,7 @@ Bool Function SaveSettings()
 EndFunction
 
 Bool Function LoadSettings()
-    If (!Load(sConfigFile) || GetErrors(sConfigFile))
+    If (DoDebug &&(!Load(sConfigFile) || GetErrors(sConfigFile)))
         ShowMessage("Errors while loading config file!\n" + GetErrors(sConfigFile), false)
         return false
     EndIf
@@ -55,6 +57,9 @@ Bool Function LoadSettings()
     return true
 EndFunction
 
+Event OnConfigClose()
+    SaveSettings()
+EndEvent
 
 ;/ //////////////////////////////////////////////////
  / MCM menu pages setup
@@ -77,6 +82,7 @@ Event OnPageReset(String Page)
         AddSliderOptionST("UpdateIntervalState", "$SLC_Short_UpdateInterval", self.fUpdateInterval, "{1}s")
         AddEmptyOption()
         AddSliderOptionST("MinSatisfactionState", "$SLC_Short_MinSatisfaction", self.fMinSatisfaction, "{1}%")
+        AddSliderOptionST("ChangeToNonconState", "$SLC_Short_ChangeToNoncon", self.fChangeToNoncon, "{1}%")
 
         AddHeaderOption("$SLC_Header_Consensual")
         AddEmptyOption()
@@ -167,5 +173,28 @@ State MinSatisfactionState
 
     Event OnHighlightST()
         SetInfoText("$SLC_Info_MinSatisfaction")
+    EndEvent
+EndState
+
+State ChangeToNonconState
+    Event OnSliderOpenST()
+        SetSliderDialogStartValue(self.fChangeToNoncon)
+		SetSliderDialogDefaultValue(5.0)
+		SetSliderDialogRange(0.0, 100.0)
+		SetSliderDialogInterval(0.1)
+    EndEvent
+
+    Event OnSliderAcceptST(float value)
+        self.fChangeToNoncon = value
+        SetSliderOptionValueST(self.fChangeToNoncon, "{1}%")
+    EndEvent
+
+    Event OnDefaultST()
+        self.fChangeToNoncon = 5.0
+        SetSliderOptionValueST(self.fChangeToNoncon, "{1}%")
+    EndEvent
+
+    Event OnHighlightST()
+        SetInfoText("$SLC_Info_ChangeToNoncon")
     EndEvent
 EndState
