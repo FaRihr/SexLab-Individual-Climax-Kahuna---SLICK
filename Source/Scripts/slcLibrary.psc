@@ -4,13 +4,17 @@ Scriptname slcLibrary extends Quest
 slcConfig Property Config Auto
 
 ; Statics for Skyrim GetSex() function
-Int Property SEX_NONE = -1 AutoReadOnly
-Int Property SEX_MALE = 0 AutoReadOnly
-Int Property SEX_FEMALE = 1 AutoReadOnly
+Int Property SEX_NONE = -1 AutoReadOnly Hidden
+Int Property SEX_MALE = 0 AutoReadOnly Hidden
+Int Property SEX_FEMALE = 1 AutoReadOnly Hidden
 ; additions by Sexlab P+ GetSex()
-Int Property SEX_FUTA = 2 AutoReadOnly
-Int Property SEX_CRTMALE = 3 AutoReadOnly
-Int Property SEX_CRTFEMALE = 4 AutoReadOnly
+Int Property SEX_FUTA = 2 AutoReadOnly Hidden
+Int Property SEX_CRTMALE = 3 AutoReadOnly Hidden
+Int Property SEX_CRTFEMALE = 4 AutoReadOnly Hidden
+
+; Mathematical constants
+Float Property MATH_PI = 3.14159265359 AutoReadOnly Hidden
+Float Property MATH_E = 2.71828182846 AutoReadOnly Hidden
 
 ; Breadth-first search for a stage in given scene that has the given array of tags
 ; asStart defines stage to start search from, empty string or none for first scene stage

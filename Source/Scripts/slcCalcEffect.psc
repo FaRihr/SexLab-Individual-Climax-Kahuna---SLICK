@@ -9,6 +9,7 @@ slaFrameworkScr Property Arousal Auto
 
 SexLabThread Thread
 Actor theTarget
+Bool firstRun
 
 Event OnEffectStart(Actor akTarget, Actor akCaster)
     RegisterForModEvent("HookOrgasmStart", "OnOrgasmStart")
@@ -16,52 +17,32 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
     theTarget = akTarget
     Thread = Sexlab.GetThreadByActor(akTarget)
 
+    firstRun = true    
+    RegisterForSingleUpdate(0.2)
+
     Lib.log("Calc effect on actor " + akTarget + " started")
-
-    ; set initial values for satisfaction and exhaustion based on external stats
-    ; set initial satisfaction
-    If (!Thread.IsConsent() && Thread.GetSubmissive(theTarget) && !Sexlab.IsLewd(theTarget))
-        ; zero satisfaction if getting raped and not being lewd
-        StorageUtil.SetFloatValue(theTarget, Config.sModId+".satisfaction", 0.0)
-    Else
-        ; initial satisfaction as random fraction of arousal -> 20 to 33%
-        Float fFirstSat = theTarget.GetFactionRank(Arousal.slaArousal) / Utility.RandomFloat(3.0, 5.0)
-        StorageUtil.SetFloatValue(theTarget, Config.sModId+".satisfaction", fFirstSat)
-    EndIf
-    Lib.log("Initial satisfaction of " + theTarget + " = " + StorageUtil.GetFloatValue(theTarget, Config.sModId+".satisfaction"))
-
-    ; TODO: get algorithm to calculate a fitting starting value based on the following two numbers
-    ; more time difference -> less starting exhaustion
-    Float fDifTimeSinceSex = Utility.GetCurrentGameTime() - Sexlab.LastSexGameTime(theTarget)
-    ; more current stamina -> less starting exhaustion
-    Float fCurStamina = theTarget.GetActorValuePercentage("Stamina")
-    If (fCurStamina == 0)
-        fCurStamina = 0.01
-    EndIf
-
-    ; TODO: change fDifTimeSinceSex with proper algo. Hyperbolic function? Have to play with numbers...
-    ; Float fFirstExh = fDifTimeSinceSex / fCurStamina
-    Float fFirstExh = 1 / (fDifTimeSinceSex / fCurStamina)
-    ; set initial exhaustion based on current stamina and time since last sex
-    StorageUtil.SetFloatValue(theTarget, Config.sModId+".exhaustion", fFirstExh)
-
-    Lib.log("Initial exhaustion of " + theTarget + " = " + StorageUtil.GetFloatValue(theTarget, Config.sModId+".exhaustion"))
-
-    RegisterForSingleUpdate(1.0)
 EndEvent
 
 ; TODO: recalculate stats periodically
 Event OnUpdate()
+    If (firstRun)
+        firstRun = false
+        SetFirstValues()
+        return
+    EndIf
 
     RegisterForSingleUpdate(Config.fUpdateInterval)
 EndEvent
 
+; garbage collection
 Event OnEffectFinish(Actor akTarget, Actor akCaster)
-    Lib.log("Calc effect on actor " + akTarget + " finished")
-    theTarget = None
-    Thread = None
     UnregisterForUpdate()
     UnregisterForModEvent("HookOrgasmStart")
+    StorageUtil.UnsetFloatValue(theTarget, Config.sModId+".satisfaction")
+    StorageUtil.UnsetFloatValue(theTarget, Config.sModId+".exhaustion")
+    theTarget = None
+    Thread = None
+    Lib.log("Calc effect on actor " + akTarget + " finished")
 EndEvent
 
 ; TODO: apply proper orgasm event handling
@@ -101,3 +82,46 @@ Event OnOrgasmStart(int aiThreadID, bool abHasPlayer)
         i += 1
     EndWhile
 EndEvent
+
+;  set initial values for satisfaction and exhaustion based on external stats
+Function SetFirstValues()
+    ; set initial satisfaction
+    If (!Thread.IsConsent() && Thread.GetSubmissive(theTarget) && !Sexlab.IsLewd(theTarget))
+        ; zero satisfaction if getting raped and not being lewd
+        StorageUtil.SetFloatValue(theTarget, Config.sModId+".satisfaction", 0.0)
+    Else
+        ; calculate satisfaction based on arousal and days since last sex
+        Float CurAr = theTarget.GetFactionRank(Arousal.slaArousal) as Float
+        If (CurAr < 10.0)
+            CurAr = 10.0
+        EndIf
+        Float fTimeSinceSex = Utility.GetCurrentGameTime() - Sexlab.LastSexGameTime(theTarget)
+
+        ; logistic function with G=100, k=0.003, t=days since last sex, f(0)=current arousal
+        ; with min arousal(=10) it takes ~30 in-game days since last sex to reach 99.9 satisfaction
+        ; f(t) = G / [1 + e^(-k*G*t) * (G/f(0) - 1)]
+        Float fFirstSat = 100 / (1 + Math.pow(Lib.MATH_E,(-0.3 * fTimeSinceSex)*(100 / CurAr - 1)))
+        StorageUtil.SetFloatValue(theTarget, Config.sModId+".satisfaction", fFirstSat)
+    EndIf
+    Lib.log("Initial satisfaction of " + theTarget + " = " + StorageUtil.GetFloatValue(theTarget, Config.sModId+".satisfaction"))
+
+    ; TODO: get algorithm to calculate a fitting starting value based on the following two numbers
+    ; more time difference -> less starting exhaustion
+    Float fDifTimeSinceSex = Utility.GetCurrentGameTime() - Sexlab.LastSexGameTime(theTarget)
+    ; more current stamina -> less starting exhaustion
+    Float fCurStamina = theTarget.GetActorValuePercentage("Stamina")
+    If (fCurStamina == 0)
+        fCurStamina = 0.01
+    EndIf
+
+    ; TODO: change fDifTimeSinceSex with proper algo. Hyperbolic function? Have to play with numbers...
+    ; Float fFirstExh = fDifTimeSinceSex / fCurStamina
+    Float fFirstExh = 1 / (fDifTimeSinceSex / fCurStamina)
+    ; set initial exhaustion based on current stamina and time since last sex
+    StorageUtil.SetFloatValue(theTarget, Config.sModId+".exhaustion", fFirstExh)
+
+    Lib.log("Initial exhaustion of " + theTarget + " = " + StorageUtil.GetFloatValue(theTarget, Config.sModId+".exhaustion"))
+
+    ; start update loop
+    self.RegisterForSingleUpdate(0.1)
+EndFunction
