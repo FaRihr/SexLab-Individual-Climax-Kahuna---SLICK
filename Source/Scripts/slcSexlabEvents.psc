@@ -47,30 +47,14 @@ Function OnStageStart(SexLabThread akThread)
         Lib.log("Ignoring animation due to missing player setting")
         return
     EndIf
-    String curScene = akThread.GetActiveScene()
-    String curStage = akThread.GetActiveStage()
-    String[] climaxStages = SexlabRegistry.GetClimaxStages(curScene)
+    
+    Actor[] climaxing = Lib.GetClimaxingActors(akThread)
 
-    ; no need for any checks if no orgasm happens
-    If (climaxStages.Find(curStage) < 0)
+    If (!climaxing[0])
         return
     EndIf
-    Lib.log("Stage" + curStage + " in scene " + curScene + " identified as orgasm stage on stage start")
 
-    ; check which actors would have an orgasm
-    ; Scrab stated, that GetPositions() and the climaxing array share the same order. Yay!
-    int[] climaxing = SexLabRegistry.GetClimaxingActors(curScene, curStage)
-    Actor[] positions = akThread.GetPositions()
-
-    int i = 0
-    While (i < climaxing.Length)
-        Actor climax = positions[climaxing[i]]
-        Lib.log("Climaxing actor " + climax + " - checking if orgasm is realistic")
-
-        ; TODO: check if we skip orgasm based on data
-
-        i += 1
-    EndWhile
+    ; TODO: check if orgasm stage needs to be skipped
 EndFunction
 
 ; Called whenever a stage ends, including the very last one
@@ -81,27 +65,19 @@ Function OnStageEnd(SexLabThread akThread)
     EndIf
     ; manipulate scene based on calculated satisfaction and exhaustion
 
-    String curScene = akThread.GetActiveScene()
-    String curStage = akThread.GetActiveStage()
-    Bool isCon = akThread.IsConsent()
-    String[] climaxStages = SexlabRegistry.GetClimaxStages(curScene)
+    Actor[] climaxing = Lib.GetClimaxingActors(akThread)
 
-    If (climaxStages.Find(curStage) < 0)
+    If (!climaxing[0])
         return
     EndIf
-    Lib.log("Stage" + curStage + " in scene " + curScene + " identified as orgasm stage on stage end")
 
-    ; check which actors had an orgasm
-    ; Scrab stated, that GetPositions() and the climaxing array share the same order. Yay!
-    int[] climaxing = SexLabRegistry.GetClimaxingActors(curScene, curStage)
-    Actor[] positions = akThread.GetPositions()
-    Actor climax = none
-
+    Bool isCon = akThread.IsConsent()
     Bool allHappy = true
     int i = 0
+
     ; TODO: check for scene types whether all are happy
     While (i < climaxing.Length && allHappy)
-        climax = positions[climaxing[i]]
+        Actor climax = climaxing[i]
         Float sat = StorageUtil.GetFloatValue(climax, Config.sModId+".satisfaction", 0)
 
         ; TODO: check whether the scene may end or if someone wants more
@@ -119,7 +95,7 @@ Function OnStageEnd(SexLabThread akThread)
     EndWhile
 
     If (!allHappy && !akThread.HasContext("SLICKUnsatisfied"))
-        Lib.log("Added unsatisfied context to scene" + curScene + " to search for next anim on scene end")
+        Lib.log("Added unsatisfied context to scene" + akThread.GetActiveScene() + " to search for next anim on scene end")
         akThread.AddContext("SLICKUnsatisfied")
         akThread.SetConsent(false) ; change to rape
     EndIf
@@ -160,6 +136,8 @@ Function OnAnimationEnd(SexLabThread akThread)
 
         String PenStage = Lib.BFS(nextScene, asTags)
         Lib.log("Found new scene " + nextScene + ", starting at penetration stage " + PenStage)
+        ; has to wait until Scrab adds that back to the new API
+        ; akThread.ResetScene(nextScene)
         akThread.SkipTo(PenStage)
     EndIf
 EndFunction

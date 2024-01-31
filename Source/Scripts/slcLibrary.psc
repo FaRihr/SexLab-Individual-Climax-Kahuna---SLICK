@@ -95,3 +95,33 @@ Function log(String msg, Int iSev=0, Bool Stack=false)
     EndIf
     Debug.TraceUser("SLICK", msg, iSev)
 EndFunction
+
+Actor[] Function GetClimaxingActors(SexLabThread akThread)
+    If (akThread.GetStatus() != akThread.STATUS_INSCENE)
+        return None
+    EndIf
+
+    String curScene = akThread.GetActiveScene()
+    String curStage = akThread.GetActiveStage()
+    String[] climaxStages = SexlabRegistry.GetClimaxStages(curScene)
+
+    ; no need for any checks if no orgasm happens
+    If (climaxStages.Find(curStage) < 0)
+        return None
+    EndIf
+    log("Stage" + curStage + " in scene " + curScene + " identified as orgasm stage")
+
+    ; check which actors would have an orgasm
+    ; Scrab stated, that GetPositions() and the climaxing array share the same order. Yay!
+    int[] climaxIDs = SexLabRegistry.GetClimaxingActors(curScene, curStage)
+    Actor[] positions = akThread.GetPositions()
+    Actor[] climaxing = PapyrusUtil.ActorArray(climaxIDs.Length)
+
+    int i = 0
+    While (i < climaxIDs.Length)
+        climaxing[i] = positions[climaxIDs[i]]
+        i += 1
+    EndWhile
+
+    return climaxing
+EndFunction

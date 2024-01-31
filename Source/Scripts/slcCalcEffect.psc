@@ -58,6 +58,7 @@ EndEvent
 
 Event OnEffectFinish(Actor akTarget, Actor akCaster)
     Lib.log("Calc effect on actor " + akTarget + " finished")
+    theTarget = None
     Thread = None
     UnregisterForUpdate()
     UnregisterForModEvent("HookOrgasmStart")
@@ -72,24 +73,19 @@ Event OnOrgasmStart(int aiThreadID, bool abHasPlayer)
 
     String curScene = Thread.GetActiveScene()
     String curStage = Thread.GetActiveStage()
-    ; String[] climaxStages = SexlabRegistry.GetClimaxStages(curScene)
 
-    ; check which actors had an orgasm
-    ; Scrab stated, that GetPositions() and the climaxing array share the same order. Yay!
-    int[] climaxing = SexLabRegistry.GetClimaxingActors(curScene, curStage)
-    Actor[] positions = Thread.GetPositions()
+    Actor[] climaxing = Lib.GetClimaxingActors(Thread)
 
     int i = 0
     While (i < climaxing.Length)
-        Lib.log("Climaxing actor: " + positions[climaxing[i]])
-        If (positions[climaxing[i]] == theTarget)
+        If (climaxing[i] == theTarget)
             Lib.log("Target of calc effect is climaxing")
 
             ; partial SLSO backwards compatibility
             Int handle = ModEvent.Create("SexlabOrgasmSeparate")
             If (handle)
                 ModEvent.PushForm(handle, theTarget)
-                ModEvent.PushInt(handle, Thread.GetThreadID())
+                ModEvent.PushInt(handle, aiThreadID)
             EndIf
 
             ; TODO: adjust satisfaction and exhaustion in case of an orgasm

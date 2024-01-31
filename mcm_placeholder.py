@@ -9,8 +9,10 @@ languages = {"czech", "english", "french", "german", "italian", "japanese", "pol
 print("Searching... ", end="")
 
 # build up list of all replacers
+found = list()
 with open(MCMscript, "r", encoding="utf_8") as f:
     found = re.findall("\$[\w_]+", f.read())
+    f.close()
 
 placeholders = set(found) # remove duplicates
 del(found)
@@ -21,24 +23,29 @@ for language in languages:
 
     # remove replacers that are already present in translation file
     try:
-        with open(TransBaseName + language + ".txt", "r", encoding="utf_16_le") as f:
+        found = list()
+        with open(TransBaseName + language.upper() + ".txt", "r", encoding="utf_16_le") as f:
             found = re.findall("\$[\w_]+", f.read())
 
             for finding in found:
                 uniques.discard(finding)
+
+            f.close()
+
         del(found)
     except:
         pass
 
     uniques.discard("$Yes")
     uniques.discard("$No")
-    # uniques.discard("$achSA_Short_Scenetype")
 
     # if there are missing replacers, append them to translation file
     if len(uniques) > 0:
-        with open(TransBaseName + language + ".txt", "a+", encoding="utf_16_le") as f:
+        with open(TransBaseName + language.upper() + ".txt", "a+", encoding="utf_16_le") as f:
             f.write("\n")
             f.write("\n\t".join(sorted(uniques)))
+
+            f.close()
 
         print(language + ", ", end="")
 
