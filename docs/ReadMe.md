@@ -1,5 +1,5 @@
 # **SLICK** - **S**ex**L**ab **I**ndividual **C**limax **K**ahuna
-is a modification for [SexLab p+ v2.x](https://discord.gg/mycaxFPSeV) that introduces actual impact on animation branching and orgasm handling based on individual participant statistical values.
+is a modification based on [SexLab p+ v2.x](https://discord.gg/mycaxFPSeV) that introduces actual impact on animation branching and orgasm handling based on individual participant statistical values.
 
 Another feature that will be included is a legacy API to provide backwards compatibility for special Papyrus functions provided by [SexLab Separate Orgasm SE](https://www.loverslab.com/files/file/5929-sexlab-separate-orgasm-se/) even though this will require some updates by mod authors. Only in planning for now.
 
