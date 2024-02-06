@@ -36,8 +36,7 @@ EndEvent
 
 ; garbage collection
 Event OnEffectFinish(Actor akTarget, Actor akCaster)
-    UnregisterForUpdate()
-    UnregisterForModEvent("HookOrgasmStart")
+    ; no need to unregister events, will happen automatically
     StorageUtil.UnsetFloatValue(theTarget, Config.sModId+".satisfaction")
     StorageUtil.UnsetFloatValue(theTarget, Config.sModId+".exhaustion")
     theTarget = None
