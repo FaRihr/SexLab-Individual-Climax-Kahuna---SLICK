@@ -24,27 +24,17 @@ Scriptname SlickLegacySLSO extends sslActorAlias
 ; the API in order to remain compliant with the new SL p+ standard.
 ; -----------------------------------------------------------------------------
 
-bool function IsVictim()
-	return parent.IsVictim()
-endFunction
+SexLabThread Function GetThreadByAlias()
+	return Sexlab.GetThreadByActor(self.GetReference() as Actor)
+EndFunction
+
+Actor Function GetActorByAlias()
+	return self.GetReference() as Actor
+EndFunction
 
 bool function IsCreature()
 	return SexlabRegistry.GetRaceID(self.GetReference() as Actor) > 0
 endFunction
-
-bool function IsAggressor()
-	return parent.IsAggressor()
-endFunction
-
-bool function IsSilent()
-	return parent.IsSilent()
-endFunction
-
-string function GetActorName()
-	return parent.GetActorName()
-endFunction
-
-
 
 ;  ___ _   _ _____ _____ ____  _   _    _    _     
 ; |_ _| \ | |_   _| ____|  _ \| \ | |  / \  | |    
@@ -53,6 +43,7 @@ endFunction
 ; |___|_| \_| |_| |_____|_| \_\_| \_/_/   \_\_____|
                                                  
 
+SexLabFramework Property Sexlab Auto
 
 ; SLSO shit
 
