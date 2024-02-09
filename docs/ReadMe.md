@@ -7,8 +7,7 @@ Another feature that will be included is a legacy API to provide backwards compa
 ## Requirements
 An up-and-running setup which includes
 - [SexLab p+ v2.x](https://discord.gg/mycaxFPSeV)
-- [Sexlab Aroused NG](https://www.loverslab.com/files/file/27713-alpha-sexlab-aroused-ng/) *or* [SexLab Aroused eXtended](https://www.loverslab.com/files/file/10461-sexlab-aroused-extended/) *or* [Sexlab Aroused Redux SSE](https://www.loverslab.com/files/file/5482-sexlab-aroused-redux-sse-version-29/)
-  - OSL Aroused isn't fully compatible yet as it doesn't provide all features
+- [Sexlab Aroused NG](https://www.loverslab.com/files/file/27713-alpha-sexlab-aroused-ng/) *or* [SexLab Aroused eXtended](https://www.loverslab.com/files/file/10461-sexlab-aroused-extended/) *or* [Sexlab Aroused Redux SSE](https://www.loverslab.com/files/file/5482-sexlab-aroused-redux-sse-version-29/) *or* [OSL Aroused](https://www.nexusmods.com/skyrimspecialedition/mods/65454) v2.5+
 
 ## Features
 ### Included
