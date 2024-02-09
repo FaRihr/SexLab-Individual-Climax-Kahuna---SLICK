@@ -17,13 +17,12 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
     theTarget = akTarget
     Thread = Sexlab.GetThreadByActor(akTarget)
 
-    firstRun = true    
+    firstRun = true
     RegisterForSingleUpdate(0.2)
 
     Lib.log("Calc effect on actor " + akTarget + " started")
 EndEvent
 
-; TODO: recalculate stats periodically
 Event OnUpdate()
     If (firstRun)
         firstRun = false
@@ -31,13 +30,13 @@ Event OnUpdate()
         return
     EndIf
 
+    ; TODO: recalculate stats periodically
+
     RegisterForSingleUpdate(Config.fUpdateInterval)
 EndEvent
 
 ; garbage collection
 Event OnEffectFinish(Actor akTarget, Actor akCaster)
-    UnregisterForUpdate()
-    UnregisterForModEvent("HookOrgasmStart")
     StorageUtil.UnsetFloatValue(theTarget, Config.sModId+".satisfaction")
     StorageUtil.UnsetFloatValue(theTarget, Config.sModId+".exhaustion")
     theTarget = None
@@ -52,8 +51,8 @@ Event OnOrgasmStart(int aiThreadID, bool abHasPlayer)
         return
     EndIf
 
-    String curScene = Thread.GetActiveScene()
-    String curStage = Thread.GetActiveStage()
+    ; String curScene = Thread.GetActiveScene()
+    ; String curStage = Thread.GetActiveStage()
 
     Actor[] climaxing = Lib.GetClimaxingActors(Thread)
 

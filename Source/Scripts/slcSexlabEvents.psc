@@ -14,7 +14,7 @@ Actor Property PlayerRef Auto
 ; Called when all of the threads data is set, before the active animation is chosen
 Function OnAnimationStarting(SexLabThread akThread)
     Lib.log("Hooking into animation start")
-    If (Config.bPlayerOnly && !akThread.HasActor(self.PlayerRef))
+    If (Config.bPlayerOnly && !akThread.HasActor(self.PlayerRef) || Lib.HasCreatures(akThread))
         Lib.log("Ignoring animation due to missing player setting")
         return
     EndIf
@@ -43,7 +43,7 @@ EndFunction
 ; TODO: find out if this blocks before or after sending OnOrgasm() event
 ; Called whenever a new stage is picked, including the very first one
 Function OnStageStart(SexLabThread akThread)
-    If (Config.bPlayerOnly && !akThread.HasActor(self.PlayerRef))
+    If (Config.bPlayerOnly && !akThread.HasActor(self.PlayerRef) || Lib.HasCreatures(akThread))
         Lib.log("Ignoring animation due to missing player setting")
         return
     EndIf
@@ -59,7 +59,7 @@ EndFunction
 
 ; Called whenever a stage ends, including the very last one
 Function OnStageEnd(SexLabThread akThread)
-    If (Config.bPlayerOnly && !akThread.HasActor(self.PlayerRef))
+    If (Config.bPlayerOnly && !akThread.HasActor(self.PlayerRef) || Lib.HasCreatures(akThread))
         Lib.log("Ignoring animation due to missing player setting")
         return
     EndIf
@@ -104,7 +104,7 @@ EndFunction
 ; Called once the animation has ended
 Function OnAnimationEnd(SexLabThread akThread)
     Lib.log("Hooking into animation end")
-    If (Config.bPlayerOnly && !akThread.HasActor(self.PlayerRef))
+    If (Config.bPlayerOnly && !akThread.HasActor(self.PlayerRef) || Lib.HasCreatures(akThread))
         Lib.log("Ignoring animation due to missing player setting")
         return
     EndIf

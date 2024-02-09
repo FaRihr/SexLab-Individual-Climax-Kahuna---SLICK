@@ -86,20 +86,6 @@ String Function DFS(String asID, String asTag, String asStart="")
     return ""
 EndFunction
 
-Function log(String msg, Int iSev=0, Bool Stack=false)
-    If (!Config.DoDebug)
-        return
-    EndIf
-
-    Debug.OpenUserLog("SLICK")
-    If (Stack)
-        Debug.TraceStack("[SLICK] " + msg, iSev)
-    Else
-        Debug.Trace("[SLICK] " + msg, iSev)
-    EndIf
-    Debug.TraceUser("SLICK", msg, iSev)
-EndFunction
-
 Actor[] Function GetClimaxingActors(SexLabThread akThread)
     If (akThread.GetStatus() != akThread.STATUS_INSCENE)
         return None
@@ -127,5 +113,48 @@ Actor[] Function GetClimaxingActors(SexLabThread akThread)
         i += 1
     EndWhile
 
+    log(climaxing.Length + " climaxing actors in thread " + akThread + " identified: " + climaxing)
+
     return climaxing
+EndFunction
+
+Bool Function HasCreatures(SexLabThread akThread)
+    Int curStat = akThread.GetStatus()
+    If (curStat != akThread.STATUS_SETUP && curStat != akThread.STATUS_INSCENE)
+        return false
+    EndIf
+
+    log("Searching for creatures in thread " + akThread)
+
+    Actor[] positions = akThread.GetPositions()
+    int i = 0
+    While (i < positions.Length)
+        Actor pos = positions[i]
+        if (SexLabRegistry.GetRaceID(pos) > 0)
+            log("Creature found in thread " + akThread + " with ID: " + SexLabRegistry.GetRaceID(pos))
+            return true
+        EndIf
+        i += 1
+    EndWhile
+
+    log("No Creature found in thread " + akThread)
+    return false
+EndFunction
+
+Int Function Round(Float value)
+    Return Math.Floor(value + 0.5)
+EndFunction
+
+Function log(String msg, Int iSev=0, Bool Stack=false)
+    If (!Config.DoDebug)
+        return
+    EndIf
+
+    Debug.OpenUserLog("SLICK")
+    If (Stack)
+        Debug.TraceStack("[SLICK] " + msg, iSev)
+    Else
+        Debug.Trace("[SLICK] " + msg, iSev)
+    EndIf
+    Debug.TraceUser("SLICK", msg, iSev)
 EndFunction
