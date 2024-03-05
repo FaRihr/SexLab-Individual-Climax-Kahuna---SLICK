@@ -24,6 +24,8 @@ String Function BFS(String asID, String[] asTags, String asStart="")
         return ""
     EndIf
 
+    log("Starting Breadth-first search ")
+
     String[] queue = Utility.CreateStringArray(SexlabRegistry.GetNumStages(asID))
     String[] seen = Utility.CreateStringArray(queue.Length)
     String cur = ""
@@ -40,6 +42,7 @@ String Function BFS(String asID, String[] asTags, String asStart="")
         cur = queue[i - 1]
         queue[i - 1] = ""
         If (SexlabRegistry.IsStageTagA(asID, cur, asTags))
+
             return cur
         EndIf
 

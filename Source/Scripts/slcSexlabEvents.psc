@@ -9,8 +9,6 @@ slaFrameworkScr Property Arousal Auto
 
 Actor Property PlayerRef Auto
 
-; TODO: DRY out orgasm stage and actor identification
-
 ; Called when all of the threads data is set, before the active animation is chosen
 Function OnAnimationStarting(SexLabThread akThread)
     Lib.log("Hooking into animation start")
@@ -119,6 +117,7 @@ Function OnAnimationEnd(SexLabThread akThread)
         Lib.log("Aggressor was unsatisfied, searching for new anim as the show must go on!")
         akThread.RemoveContext("SLICKUnsatisfied")
         ; TODO: refine tags to search for, based on unsatisfied aggressor
+        ; https://www.loverslab.com/blogs/entry/19902-sexlab-p-tagging-guide/
         String[] threadScenes = akThread.GetPlayingScenes()
         String[] penetrationScenes = SexlabRegistry.LookupScenesA(akThread.GetPositions(), "!Aggressive", akThread.GetSubmissives(), 1, none)
         String[] possibleScenes = PapyrusUtil.GetMatchingString(threadScenes, penetrationScenes)

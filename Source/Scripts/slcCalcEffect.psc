@@ -12,12 +12,12 @@ Actor theTarget
 Bool firstRun
 
 Event OnEffectStart(Actor akTarget, Actor akCaster)
-    RegisterForModEvent("HookOrgasmStart", "OnOrgasmStart")
 
     theTarget = akTarget
     Thread = Sexlab.GetThreadByActor(akTarget)
-
     firstRun = true
+
+    RegisterForModEvent("HookOrgasmStart", "OnOrgasmStart")
     RegisterForSingleUpdate(0.2)
 
     Lib.log("Calc effect on actor " + akTarget + " started")
