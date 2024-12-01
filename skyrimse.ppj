@@ -17,13 +17,14 @@
     <Imports>
         <Import>@ThisProject\Source\Scripts</Import>
         <Import>@MO2\SexLab Aroused Redux SE\Source\Scripts</Import>
-        <Import>@MO2\SexLab_Framework_PPLUS_\Source\Scripts</Import>
+        <Import>@MO2\SexLab Framework PPLUS\Source\Scripts</Import>
         <Import>@MO2\SexLab Framework AE\Source\Scripts</Import>
         <Import>@MO2\RaceMenu\Source\Scripts</Import>
         <Import>@MO2\SkyUI SDK\Source\Scripts</Import>
         <Import>@MO2\Mfg Fix\Source\Scripts</Import>
         <Import>@MO2\Fores New Idles in Skyrim SE - FNIS SE\Source\Scripts</Import>
         <Import>@MO2\Skyrim Script Extender (SKSE64)\Source\Scripts</Import>
+        <Import>@MO2\PapyrusUtil SE\Source\Scripts</Import>
         <Import>@MO2\Creation Kit Scripts\Source\Scripts</Import>
     </Imports>
     <Folders>
