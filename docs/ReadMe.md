@@ -1,29 +1,25 @@
-# **SLICK** - **S**ex**L**ab **I**ndividual **C**limax **K**ahuna
-is a modification based on [SexLab p+ v2.x](https://discord.gg/mycaxFPSeV) that introduces actual impact on animation branching and orgasm handling based on individual participant statistical values.
+# **S.L.I.C.K.** - **S**ex**L**ab **I**n-depth **C**ontrol of **K**oitus
+is a modification based on [SexLab P+ v2](https://www.loverslab.com/files/file/25318-sexlab-p/) that introduces impact on animation branching and orgasm handling based on individual participant statistical values.
 
-Another feature that will be included is a legacy API to provide backwards compatibility for special Papyrus functions provided by [SexLab Separate Orgasm SE](https://www.loverslab.com/files/file/5929-sexlab-separate-orgasm-se/) even though this will require some updates by mod authors. Only in planning for now.
+First feature will be extended ongoing animation based on an assailants satisfaction.
 
----
 ## Requirements
 An up-and-running setup which includes
-- [SexLab p+ v2.x](https://discord.gg/mycaxFPSeV)
-- [Sexlab Aroused NG](https://www.loverslab.com/files/file/27713-alpha-sexlab-aroused-ng/) *or* [SexLab Aroused eXtended](https://www.loverslab.com/files/file/10461-sexlab-aroused-extended/) *or* [Sexlab Aroused Redux SSE](https://www.loverslab.com/files/file/5482-sexlab-aroused-redux-sse-version-29/) *or* [OSL Aroused](https://www.nexusmods.com/skyrimspecialedition/mods/65454) v2.5+
+ - [SexLab p+ v2](https://www.loverslab.com/files/file/25318-sexlab-p/)
+ - a mod that introduces sexual assaults
+ - preferably aggressive animations
 
 ## Features
 ### Included
-- provision of a magic effect to all participants of a sex act
-- initial calculation of required stats based on external values
-- Partial backwards compatibility to [SLSO](https://www.loverslab.com/files/file/5929-sexlab-separate-orgasm-se/)
-- basic scene manipulation based on calculated stats
+ - nothing really yet
 
 ### WIP
-- better calculation algorithms for the stats
-- better and more fine grained scene manipulation
+ - tracking of time and aggressor orgasm for an assault scene
+ - seamless branching into another scene if an aggressor wasn't satisfied
+ - MCM menu to customize settings
 
 ### Planned
-- Highly customizable calculation of authentic stat values based on external data
-- deep control over scene flow based on stats and external values
-- Fully backwards compatible function API for [SLSO](https://www.loverslab.com/files/file/5929-sexlab-separate-orgasm-se/) provided Papyrus functions (will require some patching nonetheless!)
+ - deep control over scene flow based on stats and external data (like arousal)
 
 ## License
 The code is available under a [MIT License](https://mit-license.org) to provide open permissions to fork, update and contribute to this mod. Modifying a game is a community project in the end, right? `<3`
